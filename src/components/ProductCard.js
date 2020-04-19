@@ -11,10 +11,10 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles({
     root: {
         height: 500,
-        width: 250,
+        width: 300,
     },
     media: {
-        height: 325,
+        height: 350,
         width: "auto",
     },
 });
@@ -36,18 +36,24 @@ export default function ProductCard({product, productid}) {
                         {product.title}
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
-                        {product.price}
+                        {product.currencyFormat}{product.price}
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            {/* <CardActions>
+            <CardActions>
                 <Button size="small" color="primary">
-                    Share
+                    S
                 </Button>
                 <Button size="small" color="primary">
-                    Learn More
+                    M
                 </Button>
-            </CardActions> */}
+                <Button size="small" color="primary">
+                    L
+                </Button>
+                <Button size="small" color="primary">
+                    XL
+                </Button>
+            </CardActions>
         </Card>
     );
 }
