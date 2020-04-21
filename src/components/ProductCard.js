@@ -19,8 +19,21 @@ const useStyles = makeStyles({
     },
 });
 
-export default function ProductCard({product, productid}) {
+export default function ProductCard({product, productid, shopcartstate, cartvisible, price}) {
     const classes = useStyles();
+
+    const handleClick = ({shopcartstate}, size, product) => {
+        let newCart = shopcartstate.shopcart;
+
+        newCart.push({sku: product.sku, size: size});
+        shopcartstate.setShopCart(newCart);
+
+        cartvisible.setVisible(true);
+        
+        let newPrice = price.totalprice;
+        newPrice = newPrice + product.price;
+        price.setTotalPrice(newPrice);
+    };
 
     return (
         <Card className={classes.root}>
@@ -41,16 +54,16 @@ export default function ProductCard({product, productid}) {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => handleClick({shopcartstate}, "S", product)}>
                     S
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "M", product)}>
                     M
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "L", product)}>
                     L
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "XL", product)}>
                     XL
                 </Button>
             </CardActions>

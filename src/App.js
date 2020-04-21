@@ -5,9 +5,11 @@ import logo from './logo.svg';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
 
 import './App.css';
 import ProductCard from './components/ProductCard.js';
+import ShoppingCartCard from './components/ShoppingCartCard.js';
 
 import firebase from 'firebase/app';
 import 'firebase/database';
@@ -25,11 +27,17 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+const useStyles = makeStyles({
+  carttotal: {
+    padding: 10,
+  },
+});
 
 const App = () => {
   const [data, setData] = useState({});
   const products = Object.values(data);
   const productids = Object.keys(data);
+  const classes = useStyles();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -51,24 +59,31 @@ const App = () => {
 
   const [visible, setVisible] = React.useState(false);
 
+  const [shopcart, setShopCart] = React.useState([]);
+
+  const [totalprice, setTotalPrice] = React.useState(0);
+
   return (
     <div>
     <Button onClick={toggleDrawer(true)}>My Cart</Button>
     <Grid container justify="center" spacing={spacing}>
       {products.map((product, index) => (
         <Grid key={product.sku} item>
-          <ProductCard product={product} productid={productids[index]} className={product.title}>
+          <ProductCard product={product} productid={productids[index]} shopcartstate={{ shopcart, setShopCart }} cartvisible={{ visible, setVisible }} price={{ totalprice, setTotalPrice }}>
           </ProductCard>
         </Grid>
       ))}
     </Grid>
     <Drawer anchor="right" open={visible} onClose={toggleDrawer(false)}>
-        {products.map((product, index) => (
+        {shopcart.map((product) => (
           <Grid key={product.sku} item>
-            <ProductCard product={product} productid={productids[index]} className={product.title}>
-            </ProductCard>
+            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }}>
+            </ShoppingCartCard>
           </Grid>
         ))}
+        <Typography gutterBottom variant="h6" component="p" className={classes.carttotal}>
+          Cart Total: ${totalprice}
+        </Typography>
     </Drawer>
     </div>
   );
