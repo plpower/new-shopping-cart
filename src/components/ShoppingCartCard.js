@@ -19,10 +19,21 @@ const useStyles = makeStyles({
     },
 });
 
-export default function ShoppingCartCard({product, allproducts, shopcartstate}) {
+const handleRemove = ({ shopcartstate, price }, details, size) => {
+    let newCart = shopcartstate.shopcart;
+    newCart = newCart.filter(p => !(p.sku === details[0].sku && p.size === size));
+    shopcartstate.setShopCart(newCart);
+
+    let newPrice = price.totalprice;
+    newPrice = newPrice - details[0].price;
+    price.setTotalPrice(newPrice);
+};
+
+const ShoppingCartCard = ({ product, allproducts, shopcartstate, price}) => {
     const classes = useStyles();
 
     let details = allproducts.filter(p => p.sku === product.sku);
+    console.log(product)
 
     return (
         <Card className={classes.root}>
@@ -43,10 +54,12 @@ export default function ShoppingCartCard({product, allproducts, shopcartstate}) 
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => handleRemove({ shopcartstate, price }, details, product.size)}>
                     Remove from Cart
                 </Button>
             </CardActions>
         </Card>
     );
 }
+
+export default ShoppingCartCard;

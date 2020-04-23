@@ -77,7 +77,7 @@ const App = () => {
     <Drawer anchor="right" open={visible} onClose={toggleDrawer(false)}>
         {shopcart.map((product) => (
           <Grid key={product.sku} item>
-            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }}>
+            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }} price={{ totalprice, setTotalPrice }}>
             </ShoppingCartCard>
           </Grid>
         ))}
