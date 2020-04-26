@@ -35,9 +35,16 @@ const useStyles = makeStyles({
 
 const App = () => {
   const [data, setData] = useState({});
+  const [inventory, setInventory] = useState({});
   const products = Object.values(data);
   const productids = Object.keys(data);
   const classes = useStyles();
+
+  const iproducts = Object.values(inventory);
+  console.log("data")
+  console.log(data)
+  console.log("products")
+  console.log(products)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -46,6 +53,15 @@ const App = () => {
       setData(json);
     };
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      const response1 = await fetch('./data/inventory.json');
+      const json1 = await response1.json();
+      setInventory(json1);
+    };
+    fetchInventory();
   }, []);
 
   const [spacing, setSpacing] = React.useState(2);
@@ -69,7 +85,7 @@ const App = () => {
     <Grid container justify="center" spacing={spacing}>
       {products.map((product, index) => (
         <Grid key={product.sku} item>
-          <ProductCard product={product} productid={productids[index]} shopcartstate={{ shopcart, setShopCart }} cartvisible={{ visible, setVisible }} price={{ totalprice, setTotalPrice }}>
+          <ProductCard product={product} productid={productids[index]} shopcartstate={{ shopcart, setShopCart }} cartvisible={{ visible, setVisible }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
           </ProductCard>
         </Grid>
       ))}
@@ -77,7 +93,7 @@ const App = () => {
     <Drawer anchor="right" open={visible} onClose={toggleDrawer(false)}>
         {shopcart.map((product) => (
           <Grid key={product.sku} item>
-            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }} price={{ totalprice, setTotalPrice }}>
+            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
             </ShoppingCartCard>
           </Grid>
         ))}

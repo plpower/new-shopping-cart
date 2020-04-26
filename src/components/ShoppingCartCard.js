@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     },
 });
 
-const handleRemove = ({ shopcartstate, price }, details, size) => {
+const handleRemove = ({ shopcartstate, price, inventorystate }, details, size, product) => {
     let newCart = shopcartstate.shopcart;
     newCart = newCart.filter(p => !(p.sku === details[0].sku && p.size === size));
     shopcartstate.setShopCart(newCart);
@@ -27,9 +27,13 @@ const handleRemove = ({ shopcartstate, price }, details, size) => {
     let newPrice = price.totalprice;
     newPrice = newPrice - details[0].price;
     price.setTotalPrice(newPrice);
+
+    let newInventory = inventorystate.inventory;
+    newInventory[product.sku][size] = newInventory[product.sku][size] + 1;
+    inventorystate.setInventory(newInventory);
 };
 
-const ShoppingCartCard = ({ product, allproducts, shopcartstate, price}) => {
+const ShoppingCartCard = ({ product, allproducts, shopcartstate, price, inventorystate}) => {
     const classes = useStyles();
 
     let details = allproducts.filter(p => p.sku === product.sku);
@@ -54,7 +58,7 @@ const ShoppingCartCard = ({ product, allproducts, shopcartstate, price}) => {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary" onClick={() => handleRemove({ shopcartstate, price }, details, product.size)}>
+                <Button size="small" color="primary" onClick={() => handleRemove({ shopcartstate, price, inventorystate }, details, product.size, product)}>
                     Remove from Cart
                 </Button>
             </CardActions>

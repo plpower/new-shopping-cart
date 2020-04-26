@@ -19,8 +19,11 @@ const useStyles = makeStyles({
     },
 });
 
-export default function ProductCard({product, productid, shopcartstate, cartvisible, price}) {
+export default function ProductCard({ product, productid, shopcartstate, cartvisible, price, inventorystate}) {
     const classes = useStyles();
+    // console.log(inventorystate.inventory)
+    // let prodInventory = inventorystate.inventory[productid]
+    // console.log(prodInventory)
 
     const handleClick = ({shopcartstate}, size, product) => {
         let newCart = shopcartstate.shopcart;
@@ -33,7 +36,34 @@ export default function ProductCard({product, productid, shopcartstate, cartvisi
         let newPrice = price.totalprice;
         newPrice = newPrice + product.price;
         price.setTotalPrice(newPrice);
+
+        let newInventory = inventorystate.inventory;
+        newInventory[productid][size] = newInventory[productid][size] - 1;
+        inventorystate.setInventory(newInventory);
     };
+
+    const handleDisable = (buttonsize) => {
+        let prodInventory = inventorystate.inventory[productid]
+        if (prodInventory) {
+            if (prodInventory[buttonsize] == 0) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
+        }
+    };
+
+    const handleButtonName = (size) => {
+        let disabled = handleDisable(size)
+        if (disabled) {
+            return "Out of Stock"
+        } else {
+            return size
+        }
+    }
+
 
     return (
         <Card className={classes.root}>
@@ -54,16 +84,16 @@ export default function ProductCard({product, productid, shopcartstate, cartvisi
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary" onClick={() => handleClick({shopcartstate}, "S", product)}>
-                    S
+                <Button size="small" color="primary" disabled={handleDisable("S")} onClick={() => handleClick({shopcartstate}, "S", product)}>
+                    { handleButtonName("S") }
                 </Button>
-                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "M", product)}>
+                <Button size="small" color="primary" disabled={handleDisable("M")} onClick={() => handleClick({ shopcartstate }, "M", product)}>
                     M
                 </Button>
-                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "L", product)}>
+                <Button size="small" color="primary" disabled={handleDisable("L")} onClick={() => handleClick({ shopcartstate }, "L", product)}>
                     L
                 </Button>
-                <Button size="small" color="primary" onClick={() => handleClick({ shopcartstate }, "XL", product)}>
+                <Button size="small" color="primary" disabled={handleDisable("XL")} onClick={() => handleClick({ shopcartstate }, "XL", product)}>
                     XL
                 </Button>
             </CardActions>
