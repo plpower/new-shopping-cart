@@ -26,6 +26,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const db = firebase.database().ref()
 
 const useStyles = makeStyles({
   carttotal: {
@@ -47,6 +48,15 @@ const App = () => {
   console.log(products)
 
   useEffect(() => {
+
+    const handleData = snap => {
+      if (snap.val()) setInventory(snap.val())
+    }
+    db.on('value', handleData, error => alert(error));
+    return () => { db.off('value', handleData); };
+  }, []);
+
+  useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch('./data/products.json');
       const json = await response.json();
@@ -55,14 +65,14 @@ const App = () => {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      const response1 = await fetch('./data/inventory.json');
-      const json1 = await response1.json();
-      setInventory(json1);
-    };
-    fetchInventory();
-  }, []);
+  // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     const response1 = await fetch('./data/inventory.json');
+  //     const json1 = await response1.json();
+  //     setInventory(json1);
+  //   };
+  //   fetchInventory();
+  // }, []);
 
   const [spacing, setSpacing] = React.useState(2);
 
