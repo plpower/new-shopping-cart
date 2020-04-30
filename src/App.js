@@ -6,6 +6,8 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
+import { Message } from "rbx";
+import "rbx/index.css";
 
 import './App.css';
 import ProductCard from './components/ProductCard.js';
@@ -13,6 +15,9 @@ import ShoppingCartCard from './components/ShoppingCartCard.js';
 
 import firebase from 'firebase/app';
 import 'firebase/database';
+
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB4-p223h9-HoXWrzr7R1Jc0iZ1dV3YnfU",
@@ -25,6 +30,16 @@ const firebaseConfig = {
   measurementId: "G-FWSGT8YB77"
 };
 
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false
+  }
+};
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database().ref()
 
@@ -35,6 +50,7 @@ const useStyles = makeStyles({
 });
 
 const App = () => {
+  const [user, setUser] = useState(null);
   const [data, setData] = useState({});
   const [inventory, setInventory] = useState({});
   const products = Object.values(data);
@@ -65,6 +81,10 @@ const App = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(setUser);
+  }, []);
+
   // useEffect(() => {
   //   const fetchInventory = async () => {
   //     const response1 = await fetch('./data/inventory.json');
@@ -89,8 +109,34 @@ const App = () => {
 
   const [totalprice, setTotalPrice] = React.useState(0);
 
+  const Banner = ({ user, title }) => (
+    <React.Fragment>
+      {user ? <Welcome user={user} /> : <SignIn />}
+      <p>{title || '[loading...]'}</p>
+    </React.Fragment>
+  );
+
+  const Welcome = ({ user }) => (
+    <Message color="info">
+      <Message.Header>
+        Welcome, {user.displayName}
+        <Button primary onClick={() => firebase.auth().signOut()}>
+          Log out
+      </Button>
+      </Message.Header>
+    </Message>
+  );
+
+  const SignIn = () => (
+    <StyledFirebaseAuth
+      uiConfig={uiConfig}
+      firebaseAuth={firebase.auth()}
+    />
+  );
+
   return (
     <div>
+    <Banner title="My Store" user={user} />
     <Button onClick={toggleDrawer(true)}>My Cart</Button>
     <Grid container justify="center" spacing={spacing}>
       {products.map((product, index) => (
