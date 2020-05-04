@@ -134,6 +134,22 @@ const App = () => {
     />
   );
 
+  const handleCheckout = () => {
+    setShopCart([])
+    setTotalPrice(0)
+    // shopcart.map((item, index)=>{
+    //   var size = item.size
+    //   var sku = item.sku
+
+    //   // let newInventory = inventory;
+    //   // newInventory[sku][size] = newInventory[sku][size] - 1;
+    //   // setInventory(newInventory);
+
+    //   firebase.database().ref(sku + '/' + size).set(inventory[sku][size]);
+    // }
+    // );
+  };
+
   return (
     <div>
     <Banner title="My Store" user={user} />
@@ -141,7 +157,7 @@ const App = () => {
     <Grid container justify="center" spacing={spacing}>
       {products.map((product, index) => (
         <Grid key={product.sku} item>
-          <ProductCard product={product} productid={productids[index]} shopcartstate={{ shopcart, setShopCart }} cartvisible={{ visible, setVisible }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
+          <ProductCard userstate={{ user, setUser}} product={product} productid={productids[index]} shopcartstate={{ shopcart, setShopCart }} cartvisible={{ visible, setVisible }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
           </ProductCard>
         </Grid>
       ))}
@@ -149,13 +165,16 @@ const App = () => {
     <Drawer anchor="right" open={visible} onClose={toggleDrawer(false)}>
         {shopcart.map((product) => (
           <Grid key={product.sku} item>
-            <ShoppingCartCard product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
+            <ShoppingCartCard userstate={{ user, setUser }} product={product} allproducts={products} shopcartstate={{ shopcart, setShopCart }} price={{ totalprice, setTotalPrice }} inventorystate={{ inventory, setInventory }}>
             </ShoppingCartCard>
           </Grid>
         ))}
         <Typography gutterBottom variant="h6" component="p" className={classes.carttotal}>
-          Cart Total: ${totalprice}
+          Cart Total: ${totalprice.toFixed(2)}
         </Typography>
+        <Button onClick={handleCheckout}>
+          CHECKOUT
+        </Button>
     </Drawer>
     </div>
   );

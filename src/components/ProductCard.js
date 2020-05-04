@@ -8,6 +8,12 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
+import firebase from 'firebase/app';
+import 'firebase/database';
+
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+
 const useStyles = makeStyles({
     root: {
         height: 500,
@@ -19,7 +25,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function ProductCard({ product, productid, shopcartstate, cartvisible, price, inventorystate}) {
+export default function ProductCard({ userstate, product, productid, shopcartstate, cartvisible, price, inventorystate}) {
     const classes = useStyles();
     // console.log(inventorystate.inventory)
     // let prodInventory = inventorystate.inventory[productid]
@@ -40,6 +46,10 @@ export default function ProductCard({ product, productid, shopcartstate, cartvis
         let newInventory = inventorystate.inventory;
         newInventory[productid][size] = newInventory[productid][size] - 1;
         inventorystate.setInventory(newInventory);
+
+        if (userstate.user) {
+            firebase.database().ref('carts/' + userstate.user.uid).set(shopcartstate.shopcart);
+        }
     };
 
     const handleDisable = (buttonsize) => {

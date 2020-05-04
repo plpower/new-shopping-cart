@@ -8,6 +8,12 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
+import firebase from 'firebase/app';
+import 'firebase/database';
+
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+
 const useStyles = makeStyles({
     root: {
         height: 500,
@@ -19,7 +25,7 @@ const useStyles = makeStyles({
     },
 });
 
-const handleRemove = ({ shopcartstate, price, inventorystate }, details, size, product) => {
+const handleRemove = ({ userstate, shopcartstate, price, inventorystate }, details, size, product) => {
     let newCart = shopcartstate.shopcart;
     newCart = newCart.filter(p => !(p.sku === details[0].sku && p.size === size));
     shopcartstate.setShopCart(newCart);
@@ -31,9 +37,18 @@ const handleRemove = ({ shopcartstate, price, inventorystate }, details, size, p
     let newInventory = inventorystate.inventory;
     newInventory[product.sku][size] = newInventory[product.sku][size] + 1;
     inventorystate.setInventory(newInventory);
+
+    if (userstate.user) {
+        if (shopcartstate.shopcart.length == 1) {
+            console.log("in here")
+            firebase.database().ref('carts/' + userstate.user.uid).remove();
+        } else {
+            firebase.database().ref('carts/' + userstate.user.uid).set(shopcartstate.shopcart);   
+        }
+    }
 };
 
-const ShoppingCartCard = ({ product, allproducts, shopcartstate, price, inventorystate}) => {
+const ShoppingCartCard = ({ userstate, product, allproducts, shopcartstate, price, inventorystate}) => {
     const classes = useStyles();
 
     let details = allproducts.filter(p => p.sku === product.sku);
@@ -58,7 +73,7 @@ const ShoppingCartCard = ({ product, allproducts, shopcartstate, price, inventor
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary" onClick={() => handleRemove({ shopcartstate, price, inventorystate }, details, product.size, product)}>
+                <Button size="small" color="primary" onClick={() => handleRemove({ userstate, shopcartstate, price, inventorystate }, details, product.size, product)}>
                     Remove from Cart
                 </Button>
             </CardActions>
